@@ -62,7 +62,7 @@
       margin-right: 25px;
     }
 
-    .date, .size, .quality {
+    .date, .size, .quality, .last-updated {
       color: #999;
       font-size: 18px;
       margin-top: 2px;
@@ -110,7 +110,7 @@
         const list = document.getElementById('list');
         list.innerHTML = "";
         rows.forEach(line => {
-          const [name, date, image, magnet, size, quality] = line.split(',');
+          const [name, date, image, magnet, size, quality, last_updated] = line.split(',');
           const item = document.createElement('div');
           item.className = 'item';
           item.innerHTML = `
@@ -119,9 +119,11 @@
             </div>
             <div class="details">
               <div class="name">${name}</div>
-              <div class="date">Date: ${date}</div>
+              <div class="date">Release Date: ${date}</div>
               <div class="size">Size: ${size}</div>
               <div class="quality">Quality: ${quality}</div>
+              <div class="last-updated">Last updated: ${last_updated}</div>
+
             </div>
             <a class="download" href="${magnet}">Magnet</a>
           `;
