@@ -6,19 +6,20 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #000;
+      background: #000000;
       color: #fff;
-      margin: 20px;
+      margin: 0;
+      padding: 20px;
     }
     .item {
       display: flex;
       flex-direction: row;
       align-items: center;
-      background: #000;
+      background: #111;
       padding: 10px;
       border-radius: 6px;
       margin-bottom: 10px;
-      max-width: 700px;
+      max-width: 800px;
     }
     img {
       width: 80px;
@@ -35,9 +36,10 @@
       font-size: 16px;
       color: #fff;
     }
-    .date {
+    .date, .size, .quality {
       color: #999;
       font-size: 13px;
+      margin-top: 2px;
     }
     a.download {
       color: #1e90ff;
@@ -52,20 +54,16 @@
 <body>
   <h1 style="color:white;">Magnus Sol</h1>
   <div id="list"></div>
-
   <script>
-    const csvUrl = "https://raw.githubusercontent.com/sadkjasldjlajdj3323213sdad/t/refs/heads/main/torrents.csv?t=" + new Date().getTime();
-
+    const csvUrl = "https://raw.githubusercontent.com/YourUser/YourRepo/main/torrents.csv?t=" + new Date().getTime();
     fetch(csvUrl)
       .then(res => res.text())
       .then(text => {
-        const rows = text.trim().split('\n').slice(1); 
+        const rows = text.trim().split('\n').slice(1);
         const list = document.getElementById('list');
-        list.innerHTML = ""; 
-
+        list.innerHTML = "";
         rows.forEach(line => {
-          const [name, date, image, magnet] = line.split(',');
-
+          const [name, date, image, magnet, size, quality] = line.split(',');
           const item = document.createElement('div');
           item.className = 'item';
           item.innerHTML = `
@@ -73,6 +71,8 @@
             <div class="details">
               <div class="name">${name}</div>
               <div class="date">Date: ${date}</div>
+              <div class="size">Size: ${size}</div>
+              <div class="quality">Quality: ${quality}</div>
             </div>
             <a class="download" href="${magnet}">Download</a>
           `;
@@ -80,8 +80,8 @@
         });
       })
       .catch(err => {
-        console.error("Error loading CSV:", err);
-        document.getElementById('list').innerText = "Data lodding eror";
+        console.error(err);
+        document.getElementById('list').innerText = "data lodding eror";
       });
   </script>
 </body>
