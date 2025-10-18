@@ -8,11 +8,9 @@
     body {
       font-family: Arial, sans-serif;
       background: #000;
-      height: 100%;
       margin: 0;
-      padding: 0;
-      color: #fff;
       padding: 20px;
+      color: #fff;
     }
 
     h1 {
@@ -23,25 +21,35 @@
       margin-bottom: 20px;
     }
 
+    select {
+      display: block;
+      margin: 0 auto 30px auto;
+      padding: 8px 12px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: none;
+      background: #222;
+      color: #fff;
+    }
+
     .item {
       display: flex;
-      max-width: 95vw;
-      flex-direction: row; 
+      flex-direction: row;
       align-items: center;
       background: #222;
       padding: 15px;
       border-radius: 10px;
       margin-bottom: 15px;
+      max-width: 95vw;
     }
 
     .img-container {
-      width: 12vw;         
+      width: 12vw;
       aspect-ratio: 3 / 4;
       flex-shrink: 0;
       overflow: hidden;
       border-radius: 10px;
       margin-right: 20px;
-      
     }
 
     .img-container img {
@@ -51,7 +59,7 @@
     }
 
     .details {
-      flex: 1; 
+      flex: 1;
     }
 
     .name {
@@ -62,7 +70,7 @@
       margin-right: 25px;
     }
 
-    .date, .size, .quality, .last-updated {
+    .date, .size, .quality, .last-updated, .category {
       color: #999;
       font-size: 18px;
       margin-top: 2px;
@@ -73,7 +81,7 @@
       color: #ff0000;
       font-size: 20px;
       text-decoration: none;
-      padding-right:10px;
+      padding-right: 10px;
     }
 
     a.download:hover {
@@ -81,59 +89,69 @@
     }
 
     @media (max-width: 600px) {
-      .item {
-        flex-direction: row; 
-        align-items: flex-start;
-      }
-      .img-container {
-        width: 30vw;
-      }
-      .name, .date, .size, .quality {
-        font-size: 4vw;
-      }
-      a.download {
-        font-size: 5vw;
-        margin-left: 10px;
-      }
+      .item { flex-direction: row; align-items: flex-start; }
+      .img-container { width: 30vw; }
+      .name, .date, .size, .quality { font-size: 4vw; }
+      a.download { font-size: 5vw; margin-left: 10px; }
     }
   </style>
 </head>
 <body>
   <h1>Magnus Sol</h1>
+
+  <select id="categorySelect">
+    <option value="all">All</option>
+    <option value="Software">Software</option>
+    <option value="Games">Games</option>
+    <option value="TV">TV</option>
+    <option value="Films">Films</option>
+  </select>
+
   <div id="list"></div>
+
   <script>
     const csvUrl = "https://raw.githubusercontent.com/sadkjasldjlajdj3323213sdad/t/refs/heads/main/torrents.csv?t=" + new Date().getTime();
+    let allItems = [];
+
     fetch(csvUrl)
       .then(res => res.text())
       .then(text => {
         const rows = text.trim().split('\n').slice(1);
-        const list = document.getElementById('list');
-        list.innerHTML = "";
-        rows.forEach(line => {
-          const [name, date, image, magnet, size, quality, last_updated] = line.split(',');
-          const item = document.createElement('div');
-          item.className = 'item';
-          item.innerHTML = `
-            <div class="img-container">
-              <img src="${image}" alt="${name}">
-            </div>
-            <div class="details">
-              <div class="name">${name}</div>
-              <div class="date">Release Date: ${date}</div>
-              <div class="size">Size: ${size}</div>
-              <div class="quality">Quality: ${quality}</div>
-              <div class="last-updated">Last updated: ${last_updated}</div>
-
-            </div>
-            <a class="download" href="${magnet}">Magnet</a>
-          `;
-          list.appendChild(item);
+        allItems = rows.map(line => {
+          const [name, date, image, magnet, size, quality, last_updated, category] = line.split(',');
+          return { name, date, image, magnet, size, quality, last_updated, category };
         });
-      })
-      .catch(err => {
-        console.error(err);
-        document.getElementById('list').innerText = "Data loading error";
+        renderList("all");
       });
+
+    function renderList(filter) {
+      const list = document.getElementById('list');
+      list.innerHTML = "";
+
+      const filtered = filter === "all" ? allItems : allItems.filter(item => item.category === filter);
+
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <div class="img-container"><img src="${item.image}" alt="${item.name}"></div>
+          <div class="details">
+            <div class="name">${item.name}</div>
+            <div class="date">Release Date: ${item.date}</div>
+            <div class="size">Size: ${item.size}</div>
+            <div class="quality">Quality: ${item.quality}</div>
+            <div class="last-updated">Last updated: ${item.last_updated}</div>
+            <div class="category">Category: ${item.category}</div>
+          </div>
+          <a class="download" href="${item.magnet}">Magnet</a>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    document.getElementById("categorySelect").addEventListener("change", e => {
+      renderList(e.target.value);
+    });
   </script>
 </body>
 </html>
