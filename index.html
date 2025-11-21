@@ -21,15 +21,20 @@
       margin-bottom: 20px;
     }
 
-    select {
+    select, input {
       display: block;
-      margin: 0 auto 30px auto;
+      margin: 0 auto 20px auto;
       padding: 8px 12px;
       font-size: 18px;
       border-radius: 8px;
       border: none;
       background: #222;
       color: #fff;
+      text-align: center;
+    }
+
+    input {
+      width: 60vw;
     }
 
     .item {
@@ -107,6 +112,8 @@
     <option value="films">Films</option>
   </select>
 
+  <input id="searchInput" type="text" placeholder="Search">
+
   <div id="list"></div>
 
   <script>
@@ -122,17 +129,22 @@
           const [name, date, image, magnet, size, quality, last_updated, category] = parts.map(x => x.trim());
           return { name, date, image, magnet, size, quality, last_updated, category };
         });
-        renderList("all");
+        renderList("all", "");
       });
 
-    function renderList(filter) {
+    function renderList(filter, searchText = "") {
       const list = document.getElementById('list');
       list.innerHTML = "";
 
       const filtered =
-        filter === "all"
+        (filter === "all"
           ? allItems
-          : allItems.filter(item => item.category && item.category.toLowerCase() === filter.toLowerCase());
+          : allItems.filter(item =>
+              item.category && item.category.toLowerCase() === filter.toLowerCase()
+            ))
+        .filter(item =>
+          item.name.toLowerCase().includes(searchText.toLowerCase())
+        );
 
       filtered.forEach(item => {
         const div = document.createElement('div');
@@ -153,8 +165,14 @@
       });
     }
 
+    document.getElementById("searchInput").addEventListener("input", e => {
+      const category = document.getElementById("categorySelect").value;
+      renderList(category, e.target.value);
+    });
+
     document.getElementById("categorySelect").addEventListener("change", e => {
-      renderList(e.target.value);
+      const searchText = document.getElementById("searchInput").value;
+      renderList(e.target.value, searchText);
     });
   </script>
 </body>
