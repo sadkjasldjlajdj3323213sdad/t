@@ -126,17 +126,20 @@
     const csvUrl = "https://raw.githubusercontent.com/sadkjasldjlajdj3323213sdad/t/refs/heads/main/torrents.csv?t=" + new Date().getTime();
     let allItems = [];
 
-    fetch(csvUrl)
-      .then(res => res.text())
-      .then(text => {
-        const rows = text.trim().split('\n').slice(1);
-        allItems = rows.map(line => {
-          const parts = line.split(',');
-          const [name, date, image, magnet, size, quality, last_updated, category] = parts.map(x => x.trim());
-          return { name, date, image, magnet, size, quality, last_updated, category };
-        });
-        renderList("all", "");
+  fetch(csvUrl)
+    .then(res => res.text())
+    .then(text => {
+    const rows = text.trim().split('\n').slice(1);
+      allItems = rows.map(line => {
+        const parts = line.split(',');
+        const [name, date, image, magnet, size, quality, last_updated, category] = parts.map(x => x.trim());
+        return { name, date, image, magnet, size, quality, last_updated, category };
       });
+
+      allItems.sort((a, b) => new Date(b.last_updated) - new Date(a.last_updated));
+
+      renderList("all", "");
+    });
 
     function renderList(filter, searchText = "") {
       const list = document.getElementById('list');
